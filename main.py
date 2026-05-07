@@ -289,151 +289,231 @@ def student_page():
 <html>
 <head>
     <title>ExamPrep Agent</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <style>
         body {
+            margin: 0;
             font-family: Arial, sans-serif;
-            max-width: 850px;
-            margin: 40px auto;
-            padding: 20px;
-            background-color: #f7f7f7;
+            background: #f3f4f6;
+            color: #111827;
         }
 
-        h1 {
-            color: #222;
+        .header {
+            background: #111827;
+            color: white;
+            padding: 28px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 34px;
+        }
+
+        .header p {
+            margin-top: 10px;
+            color: #d1d5db;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #1f2937;
         }
 
         label {
             display: block;
-            margin-top: 15px;
+            margin-top: 14px;
+            margin-bottom: 6px;
             font-weight: bold;
         }
 
-        input, textarea, select {
+        input, textarea {
             width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            font-size: 16px;
+            box-sizing: border-box;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        .hint {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 6px;
         }
 
         button {
-            margin-top: 20px;
+            margin-top: 18px;
+            background: #2563eb;
+            color: white;
+            border: none;
             padding: 12px 18px;
-            font-size: 16px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
             cursor: pointer;
         }
 
-        #result {
-            margin-top: 30px;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .result {
+            margin-top: 18px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 16px;
             white-space: pre-wrap;
+            min-height: 80px;
+        }
+
+        .footer {
+            text-align: center;
+            color: #6b7280;
+            font-size: 13px;
+            margin: 30px 0;
+        }
+
+        @media (min-width: 900px) {
+            .grid-two {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
         }
     </style>
 </head>
+
 <body>
-    <h1>ExamPrep Agent</h1>
-    <p>Enter your exam details and the agent will create a study plan.</p>
+    <div class="header">
+        <h1>ExamPrep Agent</h1>
+        <p>Plan your revision, practise with quizzes, and get feedback on your answers.</p>
+    </div>
 
-    <label>Student name</label>
-    <input id="student_name" value="Alex">
+    <div class="container">
+        <div class="card">
+            <h2>1. Create your study plan</h2>
+            <p>Enter your exam details. The agent will prioritise your weakest topics first.</p>
 
-    <label>Subject</label>
-    <input id="subject" value="Machine Learning">
+            <div class="grid-two">
+                <div>
+                    <label>Student name</label>
+                    <input id="student_name" value="Alex">
+                </div>
 
-    <label>Exam date</label>
-    <input id="exam_date" value="2026-06-01">
+                <div>
+                    <label>Subject</label>
+                    <input id="subject" value="Machine Learning">
+                </div>
 
-    <label>Topics</label>
-    <textarea id="topics" rows="5">Supervised Learning,4
+                <div>
+                    <label>Exam date</label>
+                    <input id="exam_date" value="2026-06-01">
+                </div>
+
+                <div>
+                    <label>Study hours per day</label>
+                    <input id="study_hours_per_day" type="number" step="0.5" value="1.5">
+                </div>
+
+                <div>
+                    <label>Goal grade</label>
+                    <input id="grade_goal" value="Distinction">
+                </div>
+
+                <div>
+                    <label>Preferred study style</label>
+                    <input id="preferred_study_style" value="Practice questions">
+                </div>
+            </div>
+
+            <label>Topics and confidence</label>
+            <textarea id="topics" rows="5">Supervised Learning,4
 Unsupervised Learning,2
 Neural Networks,1</textarea>
-    <p>Write one topic per line like this: Topic name, confidence from 1 to 5</p>
+            <div class="hint">Use one topic per line: Topic name, confidence from 1 to 5</div>
 
-    <label>Study hours per day</label>
-    <input id="study_hours_per_day" type="number" step="0.5" value="1.5">
+            <label>Biggest worry</label>
+            <input id="biggest_worry" value="Neural networks">
 
-    <label>Goal grade</label>
-    <input id="grade_goal" value="Distinction">
+            <button onclick="createStudyPlan()">Create Study Plan</button>
 
-    <label>Preferred study style</label>
-    <input id="preferred_study_style" value="Practice questions">
+            <div id="result" class="result">Your study plan will appear here.</div>
+        </div>
 
-    <label>Biggest worry</label>
-    <input id="biggest_worry" value="Neural networks">
+        <div class="grid-two">
+            <div class="card">
+                <h2>2. Generate a quiz</h2>
+                <p>Choose a topic and the agent will generate practice questions.</p>
 
-    <button onclick="createStudyPlan()">Create Study Plan</button>
-<hr>
+                <label>Quiz topic</label>
+                <input id="quiz_topic" value="Neural Networks">
 
-<h2>Generate a Quiz</h2>
+                <label>Quiz difficulty</label>
+                <input id="quiz_difficulty" value="mixed">
 
-<label>Quiz topic</label><br>
-<input id="quiz_topic" value="Neural Networks"><br><br>
+                <button onclick="generateQuiz()">Generate Quiz</button>
 
-<label>Quiz difficulty</label><br>
-<input id="quiz_difficulty" value="mixed"><br><br>
+                <div id="quiz_result" class="result">Your quiz will appear here.</div>
+            </div>
 
-<button onclick="generateQuiz()">Generate Quiz</button>
+            <div class="card">
+                <h2>3. Mark your answers</h2>
+                <p>Enter your answers and the agent will give feedback.</p>
 
-<pre id="quiz_result">Your quiz will appear here.</pre>
-<hr>
+                <label>Question 1</label>
+                <input id="mark_q1" value="What is a neural network?">
 
-<h2>Mark Quiz Answers</h2>
+                <label>Your answer 1</label>
+                <textarea id="mark_a1" rows="3">A neural network is a model inspired by the brain.</textarea>
 
-<label>Question 1</label><br>
-<input id="mark_q1" value="What is a neural network?"><br><br>
+                <label>Question 2</label>
+                <input id="mark_q2" value="What is overfitting?">
 
-<label>Your answer 1</label><br>
-<textarea id="mark_a1" rows="3" cols="60">A neural network is a model inspired by the brain.</textarea><br><br>
+                <label>Your answer 2</label>
+                <textarea id="mark_a2" rows="3">Overfitting is when a model memorises the training data.</textarea>
 
-<label>Question 2</label><br>
-<input id="mark_q2" value="What is overfitting?"><br><br>
+                <button onclick="markQuiz()">Mark Quiz</button>
 
-<label>Your answer 2</label><br>
-<textarea id="mark_a2" rows="3" cols="60">Overfitting is when a model memorises the training data.</textarea><br><br>
+                <div id="mark_result" class="result">Your feedback will appear here.</div>
+            </div>
+        </div>
 
-<button onclick="markQuiz()">Mark Quiz</button>
+        <div class="footer">
+            ExamPrep Agent prototype | FastAPI + Azure App Service | Mock mode enabled
+        </div>
+    </div>
 
-<pre id="mark_result">Your feedback will appear here.</pre>
-    <div id="result">Your study plan will appear here.</div>
- <script>
-        async function markQuiz() {
-            const payload = {
-                subject: document.getElementById("subject").value,
-                topic: document.getElementById("quiz_topic").value,
-                questions: [
-                    document.getElementById("mark_q1").value,
-                    document.getElementById("mark_q2").value
-                ],
-                student_answers: [
-                    document.getElementById("mark_a1").value,
-                    document.getElementById("mark_a2").value
-                ]
-            };
-
-            document.getElementById("mark_result").innerText = "Marking quiz...";
-
-            const response = await fetch("/mark-quiz", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                document.getElementById("mark_result").innerText = data.feedback;
-            } else {
-                document.getElementById("mark_result").innerText = "Error: " + JSON.stringify(data, null, 2);
-            }
-        }
-
+    <script>
         async function createStudyPlan() {
             const topicsText = document.getElementById("topics").value.trim();
 
-            const topics = topicsText.split("\\n").map(line => {
+            const topics = topicsText.split("\\n").map(function(line) {
                 const parts = line.split(",");
                 return {
                     name: parts[0].trim(),
@@ -470,7 +550,8 @@ Neural Networks,1</textarea>
                 document.getElementById("result").innerText = "Error: " + JSON.stringify(data, null, 2);
             }
         }
-           async function generateQuiz() {
+
+        async function generateQuiz() {
             const payload = {
                 subject: document.getElementById("subject").value,
                 topic: document.getElementById("quiz_topic").value,
@@ -494,7 +575,40 @@ Neural Networks,1</textarea>
             } else {
                 document.getElementById("quiz_result").innerText = "Error: " + JSON.stringify(data, null, 2);
             }
-        }     
+        }
+
+        async function markQuiz() {
+            const payload = {
+                subject: document.getElementById("subject").value,
+                topic: document.getElementById("quiz_topic").value,
+                questions: [
+                    document.getElementById("mark_q1").value,
+                    document.getElementById("mark_q2").value
+                ],
+                student_answers: [
+                    document.getElementById("mark_a1").value,
+                    document.getElementById("mark_a2").value
+                ]
+            };
+
+            document.getElementById("mark_result").innerText = "Marking quiz...";
+
+            const response = await fetch("/mark-quiz", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                document.getElementById("mark_result").innerText = data.feedback;
+            } else {
+                document.getElementById("mark_result").innerText = "Error: " + JSON.stringify(data, null, 2);
+            }
+        }
     </script>
 </body>
 </html>
