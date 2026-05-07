@@ -363,7 +363,19 @@ Neural Networks,1</textarea>
     <input id="biggest_worry" value="Neural networks">
 
     <button onclick="createStudyPlan()">Create Study Plan</button>
+<hr>
 
+<h2>Generate a Quiz</h2>
+
+<label>Quiz topic</label><br>
+<input id="quiz_topic" value="Neural Networks"><br><br>
+
+<label>Quiz difficulty</label><br>
+<input id="quiz_difficulty" value="mixed"><br><br>
+
+<button onclick="generateQuiz()">Generate Quiz</button>
+
+<pre id="quiz_result">Your quiz will appear here.</pre>
     <div id="result">Your study plan will appear here.</div>
 
     <script>
@@ -407,6 +419,31 @@ Neural Networks,1</textarea>
                 document.getElementById("result").innerText = "Error: " + JSON.stringify(data, null, 2);
             }
         }
+           async function generateQuiz() {
+            const payload = {
+                subject: document.getElementById("subject").value,
+                topic: document.getElementById("quiz_topic").value,
+                difficulty: document.getElementById("quiz_difficulty").value
+            };
+
+            document.getElementById("quiz_result").innerText = "Generating quiz...";
+
+            const response = await fetch("/quiz", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                document.getElementById("quiz_result").innerText = data.quiz;
+            } else {
+                document.getElementById("quiz_result").innerText = "Error: " + JSON.stringify(data, null, 2);
+            }
+        }     
     </script>
 </body>
 </html>
