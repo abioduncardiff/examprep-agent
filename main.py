@@ -282,7 +282,7 @@ At the end:
 
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
-        @app.get("/student", response_class=HTMLResponse)
+@app.get("/student", response_class=HTMLResponse)
 def student_page():
     return """
 <!DOCTYPE html>
