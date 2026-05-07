@@ -2,6 +2,7 @@ import os
 from typing import List
 
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 from openai import OpenAI
 
@@ -281,3 +282,132 @@ At the end:
 
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
+        @app.get("/student", response_class=HTMLResponse)
+def student_page():
+    return """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ExamPrep Agent</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 850px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f7f7f7;
+        }
+
+        h1 {
+            color: #222;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px 18px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #result {
+            margin-top: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>ExamPrep Agent</h1>
+    <p>Enter your exam details and the agent will create a study plan.</p>
+
+    <label>Student name</label>
+    <input id="student_name" value="Alex">
+
+    <label>Subject</label>
+    <input id="subject" value="Machine Learning">
+
+    <label>Exam date</label>
+    <input id="exam_date" value="2026-06-01">
+
+    <label>Topics</label>
+    <textarea id="topics" rows="5">Supervised Learning,4
+Unsupervised Learning,2
+Neural Networks,1</textarea>
+    <p>Write one topic per line like this: Topic name, confidence from 1 to 5</p>
+
+    <label>Study hours per day</label>
+    <input id="study_hours_per_day" type="number" step="0.5" value="1.5">
+
+    <label>Goal grade</label>
+    <input id="grade_goal" value="Distinction">
+
+    <label>Preferred study style</label>
+    <input id="preferred_study_style" value="Practice questions">
+
+    <label>Biggest worry</label>
+    <input id="biggest_worry" value="Neural networks">
+
+    <button onclick="createStudyPlan()">Create Study Plan</button>
+
+    <div id="result">Your study plan will appear here.</div>
+
+    <script>
+        async function createStudyPlan() {
+            const topicsText = document.getElementById("topics").value.trim();
+
+            const topics = topicsText.split("\\n").map(line => {
+                const parts = line.split(",");
+                return {
+                    name: parts[0].trim(),
+                    confidence: Number(parts[1].trim())
+                };
+            });
+
+            const payload = {
+                student_name: document.getElementById("student_name").value,
+                subject: document.getElementById("subject").value,
+                exam_date: document.getElementById("exam_date").value,
+                topics: topics,
+                study_hours_per_day: Number(document.getElementById("study_hours_per_day").value),
+                grade_goal: document.getElementById("grade_goal").value,
+                preferred_study_style: document.getElementById("preferred_study_style").value,
+                biggest_worry: document.getElementById("biggest_worry").value
+            };
+
+            document.getElementById("result").innerText = "Creating study plan...";
+
+            const response = await fetch("/study-plan", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                document.getElementById("result").innerText = data.study_plan;
+            } else {
+                document.getElementById("result").innerText = "Error: " + JSON.stringify(data, null, 2);
+            }
+        }
+    </script>
+</body>
+</html>
+"""
