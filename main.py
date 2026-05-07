@@ -396,6 +396,7 @@ Neural Networks,1</textarea>
 
 <pre id="mark_result">Your feedback will appear here.</pre>
     <div id="result">Your study plan will appear here.</div>
+ <script>
         async function markQuiz() {
             const payload = {
                 subject: document.getElementById("subject").value,
@@ -428,7 +429,7 @@ Neural Networks,1</textarea>
                 document.getElementById("mark_result").innerText = "Error: " + JSON.stringify(data, null, 2);
             }
         }
-    <script>
+
         async function createStudyPlan() {
             const topicsText = document.getElementById("topics").value.trim();
 
