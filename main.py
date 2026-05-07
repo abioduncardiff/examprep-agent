@@ -376,8 +376,58 @@ Neural Networks,1</textarea>
 <button onclick="generateQuiz()">Generate Quiz</button>
 
 <pre id="quiz_result">Your quiz will appear here.</pre>
-    <div id="result">Your study plan will appear here.</div>
+<hr>
 
+<h2>Mark Quiz Answers</h2>
+
+<label>Question 1</label><br>
+<input id="mark_q1" value="What is a neural network?"><br><br>
+
+<label>Your answer 1</label><br>
+<textarea id="mark_a1" rows="3" cols="60">A neural network is a model inspired by the brain.</textarea><br><br>
+
+<label>Question 2</label><br>
+<input id="mark_q2" value="What is overfitting?"><br><br>
+
+<label>Your answer 2</label><br>
+<textarea id="mark_a2" rows="3" cols="60">Overfitting is when a model memorises the training data.</textarea><br><br>
+
+<button onclick="markQuiz()">Mark Quiz</button>
+
+<pre id="mark_result">Your feedback will appear here.</pre>
+    <div id="result">Your study plan will appear here.</div>
+        async function markQuiz() {
+            const payload = {
+                subject: document.getElementById("subject").value,
+                topic: document.getElementById("quiz_topic").value,
+                questions: [
+                    document.getElementById("mark_q1").value,
+                    document.getElementById("mark_q2").value
+                ],
+                student_answers: [
+                    document.getElementById("mark_a1").value,
+                    document.getElementById("mark_a2").value
+                ]
+            };
+
+            document.getElementById("mark_result").innerText = "Marking quiz...";
+
+            const response = await fetch("/mark-quiz", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                document.getElementById("mark_result").innerText = data.feedback;
+            } else {
+                document.getElementById("mark_result").innerText = "Error: " + JSON.stringify(data, null, 2);
+            }
+        }
     <script>
         async function createStudyPlan() {
             const topicsText = document.getElementById("topics").value.trim();
